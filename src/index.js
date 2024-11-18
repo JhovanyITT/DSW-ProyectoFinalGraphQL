@@ -4,13 +4,15 @@ const productTypeDefs = require('./schemas/productSchema');
 const productResolvers = require('./resolvers/productResolver');
 const userTypeDefs = require('./schemas/userSchema');
 const userResolvers = require('./resolvers/userResolver');
+const carTypeDefs = require('./schemas/carSchema');
+const carResolvers = require('./resolvers/carResolver');
 const { merge } = require('lodash');
 
 const startServer = async () => {
   await mongoose.connect('mongodb+srv://alazamaralde:eVzE7gndAdZ0nKGl@aldocluster.bynde.mongodb.net/?retryWrites=true&w=majority&appName=AldoCluster');
   
-  const typeDefs = [ productTypeDefs, userTypeDefs ];
-  const resolvers = merge(productResolvers, userResolvers);
+  const typeDefs = [ productTypeDefs, userTypeDefs, carTypeDefs ];
+  const resolvers = merge(productResolvers, userResolvers, carResolvers);
 
   const server = new ApolloServer({ typeDefs, resolvers });
 
