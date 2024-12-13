@@ -10,11 +10,14 @@ const fs = require('fs');
 
 const cartResolvers = {
   Query: {
+    leerTodos: async () => {
+        return await Car.find().populate('usuario').populate('productos.producto');
+    },
     leerCarrito: async (_, { id_carrito }) => {
         return await Car.findById(id_carrito).populate('usuario').populate('productos.producto');
     },
-    leerHistoria: async (_, { usuario }) => {
-        return await Car.find({ usuario, estatus: 'cerrado' }).populate('productos.producto');
+    leerHistorial: async (_, { usuario }) => {
+        return await Car.find({ usuario }).populate('usuario').populate('productos.producto');
     }
   },
   Mutation: {

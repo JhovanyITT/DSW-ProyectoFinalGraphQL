@@ -17,4 +17,4 @@ const cartSchema = new mongoose.Schema({
     fecha_cierre: { type: Date }
   });
   
-  module.exports = mongoose.model('Cars', cartSchema);
+  module.exports = mongoose.model('shopCarts', cartSchema);

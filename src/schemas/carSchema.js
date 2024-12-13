@@ -20,8 +20,9 @@ const carTypeDefs = gql`
   }
 
   type Query {
+    leerTodos: [Car]
     leerCarrito(id_carrito: ID!): Car
-    leerHistoria(usuario: ID!): [Car]
+    leerHistorial(usuario: ID!): [Car]
   }
 
   type Mutation {
