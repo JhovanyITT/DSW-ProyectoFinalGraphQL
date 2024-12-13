@@ -26,7 +26,6 @@ const carTypeDefs = gql`
   type Mutation {
     agregarProd(id_carrito: ID!, productoId: ID!, cantidad: Int!): Car
     eliminarProd(id_carrito: ID!, productoId: ID!): Car
-    actualizarCarrito(id_carrito: ID!): Car
     crearCarrito(usuario: ID!): Car
     cerrarCarrito(id_carrito: ID!): Car
   }

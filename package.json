@@ -11,10 +11,14 @@
   "description": "",
   "dependencies": {
     "apollo-server": "^3.13.0",
+    "dotenv": "^16.4.7",
     "facturapi": "^4.3.0",
+    "firebase": "^11.1.0",
     "graphql": "^16.9.0",
     "lodash": "^4.17.21",
     "mongoose": "^8.8.0",
-    "node-mailjet": "^6.0.6"
+    "node-mailjet": "^6.0.6",
+    "pdfkit": "^0.15.1",
+    "twilio": "^5.4.0"
   }
 }

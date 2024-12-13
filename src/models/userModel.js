@@ -8,7 +8,7 @@ const userSchema = new mongoose.Schema({
     telefono: String,
     fechaRegistro: { type: Date, default: Date.now },
     tipoUsuario: { type: String, enum: ['Cliente', 'Admin'], default: 'Cliente' },
-    metodoPagoPreferido: { type: String, enum: ['PayPal', 'CreditCard', ' DebitCard', 'ApplePay', 'Mercado Pago'] },
+    metodoPagoPreferido: { type: String, enum: ['PayPal', 'CreditCard', 'DebitCard', 'ApplePay', 'Mercado Pago'] },
     facturapiid: { type: String } 
 });
 

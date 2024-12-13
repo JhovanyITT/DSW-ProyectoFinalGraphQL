@@ -7,9 +7,10 @@ const userResolvers = require('./resolvers/userResolver');
 const carTypeDefs = require('./schemas/carSchema');
 const carResolvers = require('./resolvers/carResolver');
 const { merge } = require('lodash');
+require('dotenv').config();
 
 const startServer = async () => {
-  await mongoose.connect('mongodb+srv://alazamaralde:eVzE7gndAdZ0nKGl@aldocluster.bynde.mongodb.net/?retryWrites=true&w=majority&appName=AldoCluster');
+  await mongoose.connect(`${process.env.MONGO_CLUSTER_URL}`);
   
   const typeDefs = [ productTypeDefs, userTypeDefs, carTypeDefs ];
   const resolvers = merge(productResolvers, userResolvers, carResolvers);

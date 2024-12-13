@@ -1,8 +1,9 @@
 const mailjet = require('node-mailjet');
+require('dotenv').config();
 
 const client = mailjet.apiConnect(
-    '2feb7bc6a8761235c4a484239a607eff',
-    '0afb6f2e8d64ea861cedb1dcb2e350e8'
+    `${process.env.MAILJET_FIRST_API_KEY}`,
+    `${process.env.MAILJET_SECOND_API_KEY}`
 );
 
 const sendEmail = async (email, subject, htmlContent) => {

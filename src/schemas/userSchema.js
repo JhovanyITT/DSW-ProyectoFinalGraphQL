@@ -39,7 +39,6 @@ const userTypeDefs = gql`
     telefono: String,
     tipoUsuario: UserType,
     metodoPagoPreferido: PaymentMethod,
-    rfc: String
   ): User
 
     updateUser(
