@@ -5,6 +5,7 @@ const { sendEmail } = require('../apis/mailjet');
 const facturapi = require('../apis/facturapi');
 const Twilio = require('../apis/twilio');
 const { uploadFile } = require('../apis/firebase');
+const Stripe = require('../apis/stripe');
 const fs = require('fs');
 
 const cartResolvers = {
@@ -22,8 +23,8 @@ const cartResolvers = {
 
         //Validar que un usuario no tenga dos carritos en activo
         if (existingCart) {
-          return ({ message: 'El usuario ya tiene un carrito activo. Por favor, cierra el carrito actual antes de crear uno nuevo.' });
-      }
+          throw new Error(`El usuario ya tiene un carrito activo. Por favor, cierra el carrito actual antes de crear uno nuevo.`);
+        }
 
         const newCart = new Car({ usuario, productos: [] });
         await newCart.save();
@@ -36,7 +37,7 @@ const cartResolvers = {
 
         // Verifica si el carrito ya esta cerrado
         if (cart.estatus === 'cerrado'){
-          return ({ error: 'Este carrito ya ha sido cerrado, no se pueden agregar productos' });
+          throw new Error(`El carrito ya ha sido cerrado, no se pueden agregar productos`);
         }
 
         const existingProduct = cart.productos.find((item) => item.producto.equals(productoId));
@@ -55,17 +56,18 @@ const cartResolvers = {
     eliminarProd: async (_, { id_carrito, productoId }) => {
         const cart = await Car.findById(id_carrito);
         
-        if (!cart) return 'Carrito no encontrado';
+        if (!cart) throw new Error(`Carrito no encontrado`);
+
 
         // Verifica si el carrito ya esta cerrado
         if (cart.estatus === 'cerrado'){
-          return ({ error: 'Este carrito ya ha sido cerrado, no se pueden remover productos' });
+          throw new Error(`El carrito ya ha sido cerrado, no se pueden remover productos`);
         }
 
         // Verifica si el producto existe en el carrito
         const productIndex = cart.productos.findIndex((item) => item.producto.equals(productoId));
         if (productIndex === -1) {
-            return ({ error: 'El producto no existe en el carrito' });
+            throw new Error(`El producto no se encuentra en el carrito`);
         }
 
         // Filtra el producto del array
@@ -77,13 +79,14 @@ const cartResolvers = {
         // Popula los productos y usuario después de guardar el carrito
         return await Car.findById(id_carrito).populate('usuario').populate('productos.producto');
     },
-    cerrarCarrito: async (_, { id_carrito }) => {
+    cerrarCarrito: async (_, { id_carrito, currency, payment_method}) => {
         const cart = await Car.findById(id_carrito).populate('usuario').populate('productos.producto');
         
-        if (!cart) 'Carrito no encontrado';
+        if (!cart) throw new Error(`Carrito no encontrado`);
+
 
         if (cart.estatus === 'cerrado'){
-          return 'El carrito ya ha sido cerrado';
+          throw new Error(`El carrito ya ha sido cerrado`);
         }
 
         // Validar que exista stocke suficiente del producto
@@ -100,12 +103,6 @@ const cartResolvers = {
           product.stock -= item.cantidad;
           await product.save();
         }
-
-        // Colocar el estatus del carrito como cerrado
-        cart.estatus = 'cerrado';
-        cart.fecha_cierre = new Date();
-        await cart.save();
-
 
         const user = await User.findById(cart.usuario._id);
         if (!user) {
@@ -141,6 +138,14 @@ const cartResolvers = {
           use: 'G01',
           payment_form: '28'
         };
+
+
+
+        // Crear el pago en stripe
+        let amount = cart.total * 100;
+        const pago = await Stripe.createPayment(amount, currency, payment_method);
+
+        cart.stripeId = pago.id;
 
         // Envia la factura a facturapi
         const factura = await facturapi.createInvoice(invoiceData);
@@ -264,6 +269,11 @@ const cartResolvers = {
 
         // Intentar enviar el correo
         await sendEmail(user.email, 'Confirmación de Compra', emailContent);
+        
+        // Colocar el estatus del carrito como cerrado
+        cart.estatus = 'cerrado';
+        cart.fecha_cierre = new Date();
+        await cart.save();
 
         return cart;
     },
@@ -286,16 +296,16 @@ async function deleteInvoicePDF(filePath) {
 
 // Función para actualizar subtotal, IVA y total
 async function updateCartTotals(cart) {
-  let subtotal = 0;
+  let total = 0;
 
   for (const item of cart.productos) {
     const product = await Product.findById(item.producto);
-    subtotal += product.price * item.cantidad;
+    total += product.price * item.cantidad;
   }
-
+  let subtotal = total - (total * 0.16);
   cart.subtotal = subtotal;
-  cart.iva = subtotal * 0.16; // Suponiendo un IVA del 16%
-  cart.total = cart.subtotal + cart.iva;
+  cart.iva = total * 0.16;
+  cart.total= total;
 }
 
 module.exports = cartResolvers;

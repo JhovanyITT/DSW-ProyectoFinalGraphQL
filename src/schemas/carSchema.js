@@ -14,6 +14,7 @@ const carTypeDefs = gql`
     iva: Float
     total: Float
     estatus: String
+    stripeId: String
     fecha_creacion: String
     fecha_cierre: String
   }
@@ -27,7 +28,11 @@ const carTypeDefs = gql`
     agregarProd(id_carrito: ID!, productoId: ID!, cantidad: Int!): Car
     eliminarProd(id_carrito: ID!, productoId: ID!): Car
     crearCarrito(usuario: ID!): Car
-    cerrarCarrito(id_carrito: ID!): Car
+    cerrarCarrito(
+      id_carrito: ID!,
+      currency: String!,
+      payment_method: String!
+    ): Car
   }
 `;
 
