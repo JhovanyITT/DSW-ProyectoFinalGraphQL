@@ -1,6 +1,6 @@
 # Información del proyecto
 ## Nombre
-ProyectoFinalApiRest
+ProyectoFinalApiGraphQl
 
 ## Descripción del proyecto
 FlareDev-API es un proyecto de parte de la materia de **Desarrollo de Servicios Web**, el cual tiene como propósito el desarrollo de una API de un sistema integral de carrito de compras que permita gestionar productos, clientes y facturas mediante APIs **(GraphQL y REST)**, utilizando tecnologías modernas de backend y conectando servicios externos para bases de datos y pagos electrónicos.
