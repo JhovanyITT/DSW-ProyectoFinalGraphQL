@@ -15,7 +15,12 @@ const startServer = async () => {
   const typeDefs = [ productTypeDefs, userTypeDefs, carTypeDefs ];
   const resolvers = merge(productResolvers, userResolvers, carResolvers);
 
-  const server = new ApolloServer({ typeDefs, resolvers });
+const server = new ApolloServer({ 
+    typeDefs, 
+    resolvers,
+    introspection: true,
+    playground: true,
+});
 
   server.listen().then(({ url }) => {
       console.log(`Servidor corriendo en ${url}`);
